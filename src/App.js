@@ -6,26 +6,33 @@ import "./styles.css";
 
 
 function App() {
-  const[reposit, setReposit] = useState([]);
+  const[repositories, setRepositories] = useState([]);
   
   useEffect(()=>{
     api.get('repositories').then(response =>{
-   setReposit(response.data);
+   setRepositories(response.data);
+   console.log(response)
     })
   },[])
   async function handleAddRepository() {
  const response = await api.post('repositories',{
        title: `novo reposit ${Date.now()}`,
         url: "hhtp//git.com",
-        techs: "oii cokm",
+        techs: ['node', ' reactJs', 'reactNative'],
         
     })
-    const reposits = response.data;
-    setReposit([...reposit, reposits])
+    const repository = response.data;
+
+
+    setRepositories([...repositories, repository])
    
   }
 
   async function handleRemoveRepository(id) {
+    await api.delete(`repositories/${id}`)
+    setRepositories(
+      repositories.filter((repository)=> repository.id !==id )
+    );
     
   }
   
@@ -34,8 +41,8 @@ function App() {
     <div>
       
       <ul data-testid="repository-list">
-        {reposit.map(reposits => <li key={reposits.id}>{reposits.title}
-          <button onClick={() => handleRemoveRepository(1)}>
+        {repositories.map(repository => <li key={repository.id}>{repository.title}
+          <button onClick={() => handleRemoveRepository(repository.id)}>
             Remover
           </button>
          </li>    
